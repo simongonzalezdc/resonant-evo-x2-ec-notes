@@ -142,7 +142,7 @@ mode/level bytes nobody has decoded. All values are hexadecimal.
 | `0x70` | byte, °C | package temperature | May 2026 |
 
 `Provenance: evo-x2-ec/README.md · "EC register map"` · read-side offsets cross-checked against
-`scripts/nucbox-ec-readonly.py` (`REGS`) and `scripts/nucbox-pmode.py` (`POWER_REGISTER = 0x31`)
+`scripts/gpu-host-ec-readonly.py` (`REGS`) and `scripts/gpu-host-pmode.py` (`POWER_REGISTER = 0x31`)
 
 Two details that will bite anyone writing code against this table:
 
@@ -256,12 +256,12 @@ everything else still. So:
 In the May 2026 session this is exactly how `0x31` was validated: bounded
 workload, modes cycled, package watts / GPU watts / clocks / temperatures
 logged per mode. The harness is
-`scripts/nucbox-pmode-click-scan.py`; the read/write tool is
-`scripts/nucbox-pmode.py`; the read-side register dump is
-`scripts/nucbox-ec-readonly.py`.
+`scripts/gpu-host-pmode-click-scan.py`; the read/write tool is
+`scripts/gpu-host-pmode.py`; the read-side register dump is
+`scripts/gpu-host-ec-readonly.py`.
 
 `Provenance: evo-x2-ec/README.md · "P-MODE mechanism and enforcement"` ·
-`scripts/nucbox-pmode-click-scan.py` (defaults: `--duration 75`, `--phase-seconds 25`,
+`scripts/gpu-host-pmode-click-scan.py` (defaults: `--duration 75`, `--phase-seconds 25`,
 `--max-tctl 82.0`, passive `--threads 0`; guard exit code `2`)
 
 What counts as a validated register, by this standard: writing it changes
@@ -283,17 +283,17 @@ firmware's patience, and writes again — forever.
 machine since May 2026 under this pattern.
 
 ```ini
-# nucbox-pmode-performance.timer (as deployed)
+# gpu-host-pmode-performance.timer (as deployed)
 [Timer]
 OnBootSec=15s
 OnUnitActiveSec=30s
 AccuracySec=5s
 Persistent=true
-Unit=nucbox-pmode-performance.service
+Unit=gpu-host-pmode-performance.service
 ```
 
-`Provenance: evo-x2-ec/README.md · "P-MODE mechanism and enforcement"` · `deploy/nucbox-pmode-performance.timer`,
-`deploy/nucbox-pmode-performance.service`
+`Provenance: evo-x2-ec/README.md · "P-MODE mechanism and enforcement"` · `deploy/gpu-host-pmode-performance.timer`,
+`deploy/gpu-host-pmode-performance.service`
 
 **Fan duty: a polling daemon.** The deployed daemon is
 [nathanmarlor/strix-halo-fan-control](https://github.com/nathanmarlor/strix-halo-fan-control)
@@ -444,9 +444,9 @@ The canonical repo holds everything: scripts, deploy units, and the register
 map this writeup restates.
 
 - Canonical repo: [KyaniteLabs/evo-x2-ec](https://github.com/KyaniteLabs/evo-x2-ec) (MIT)
-  - `scripts/nucbox-pmode.py` — read/set EC `0x31` (`status` / `set <balanced|performance|quiet>`; `set` requires root)
-  - `scripts/nucbox-ec-readonly.py` — dump the known read-side registers as JSON
-  - `scripts/nucbox-pmode-click-scan.py` — the bounded-workload + telemetry validation harness
+  - `scripts/gpu-host-pmode.py` — read/set EC `0x31` (`status` / `set <balanced|performance|quiet>`; `set` requires root)
+  - `scripts/gpu-host-ec-readonly.py` — dump the known read-side registers as JSON
+  - `scripts/gpu-host-pmode-click-scan.py` — the bounded-workload + telemetry validation harness
   - `deploy/` — module configs and the P-MODE oneshot + timer units
 - Fan daemon: [nathanmarlor/strix-halo-fan-control](https://github.com/nathanmarlor/strix-halo-fan-control) (MIT)
 
@@ -454,7 +454,7 @@ Minimum viable read-only first step, no writes involved:
 
 ```
 sudo modprobe ec_sys
-sudo python3 nucbox-ec-readonly.py
+sudo python3 gpu-host-ec-readonly.py
 ```
 
 Then, only if the machine is yours and the safety section above has been
