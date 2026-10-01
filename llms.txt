@@ -1,28 +1,15 @@
-# Talking to a mini-PC's embedded controller — EVO-X2 / Strix Halo EC notes
+# resonant-evo-x2-ec-notes
 
-Field notes for people running AMD Strix Halo mini-PCs on Linux — the class of
-box (GMKtec EVO-X2, Bosgame M5, FEVM FA-EX9: all the same Sixunited AXB35-02
-board) whose firmware exposes no standard fan control: no hwmon PWM, no fan
-tachometer, no ACPI fan object. The only lever is the Embedded Controller, and
-the only documentation is what you can measure yourself. These notes restate
-the canonical repo's register map, its two laws of EC writes, register
-validation without vendor docs, and the re-assertion deployment pattern.
+Talking to a mini-PC's embedded controller: fan and power-mode control on
+EVO-X2/Strix Halo. Adapts the published register map, discovery method, and
+deployment patterns from KyaniteLabs/evo-x2-ec for the ResonantOS community.
 
-## Canonical links
+Canonical source: https://github.com/KyaniteLabs/evo-x2-ec
+This writeup: https://github.com/simongonzalezdc/resonant-evo-x2-ec-notes
 
-- This repo: https://github.com/simongonzalezdc/resonant-evo-x2-ec-notes
-- Canonical source: https://github.com/KyaniteLabs/evo-x2-ec (MIT) — the register map, validation scripts, and deploy units
+Community gift by Kyanite Labs for the ResonantOS ecosystem — non-canonical;
+the canonical upstream always wins. MIT.
 
-## Key facts
-
-- License: MIT
-- Safety: the EC also runs thermal protection; registers were characterized
-  empirically with no vendor documentation; writing unlisted registers is
-  unwritten territory
-- Every claim carries a provenance line pointing at the canonical repo's file
-- Nothing here re-measures or re-brands anything
-
-Relationship: community gift by Kyanite Labs for ResonantOS — canonical
-source: https://github.com/KyaniteLabs/evo-x2-ec; this writeup is
-non-canonical; where anything here disagrees with the canonical repo, the
-canonical repo wins.
+Key facts: 21 EC register offsets documented; APU power-mode register 0x31
+discovered May 2026 (validated by bounded-workload + telemetry harness);
+systemd re-assertion pattern for persistence.
